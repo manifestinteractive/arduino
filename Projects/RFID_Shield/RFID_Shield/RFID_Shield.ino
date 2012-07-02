@@ -97,10 +97,10 @@ void checkTag(char tag[])
 
 	// Cleanup Scanned RFID
 	scannedRFID = tag;
-	scannedRFID = scannedRFID.substring(0, 11);
+	scannedRFID = scannedRFID.substring(0, 12);
 
 	// empty, no need to contunue
-	if(scannedRFID.length() != 11)
+	if(scannedRFID.length() != 12)
 	{
 		return;
 	}
@@ -113,7 +113,7 @@ void checkTag(char tag[])
 	{
 		// Cleanup Accepted RFID
 		acceptedRFID = myTags[i];
-		acceptedRFID = acceptedRFID.substring(0, 11);
+		acceptedRFID = acceptedRFID.substring(0, 12);
 
 		// Debug Output
 		if(Debug)
