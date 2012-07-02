@@ -33,18 +33,15 @@ char* myTags[] = {
 ----------------------------------------------------------------------
 */
 
-int RFIDResetPin = 13;
 int PinGoodTag = 7;
 int PinBadTag = 9;
+bool Debug = true;
 
 /* Default Arduino Setup Function */
 void setup()
 {
 	// connect to the serial port
 	Serial.begin(9600);
-
-	pinMode(RFIDResetPin, OUTPUT);
-	digitalWrite(RFIDResetPin, HIGH);
 
 	pinMode(PinGoodTag, OUTPUT);
 	pinMode(PinBadTag, OUTPUT);
@@ -76,108 +73,103 @@ void loop()
 		if(reading && readByte != 2 && readByte != 10 && readByte != 13)
 		{
 			//store the tag
-			tagString[index] = readByte;
+			tagString[index] = (char)readByte;
 			index ++;
 		}
 	}
 
 	// Check if it is a match
 	checkTag(tagString);
+	
+	// Clear out memory of tag string
+	memset(tagString,0,sizeof(tagString));
 
-	// Clear the char of all value
-	clearTag(tagString);
-
-	// Reset the RFID reader
-	resetReader();
+	// Give Reader time to Reset
+	delay(150);
 }
 
 /* Check the read tag against known tags */
 void checkTag(char tag[])
 {
+	// Setup Custom Variables to Hold RFID Data
+	String scannedRFID;
+	String acceptedRFID;
+
+	// Cleanup Scanned RFID
+	scannedRFID = tag;
+	scannedRFID = scannedRFID.substring(0, 11);
+
 	// empty, no need to contunue
-	if(strlen(tag) == 0)
+	if(scannedRFID.length() != 11)
 	{
 		return;
 	}
 
 	// get size of tags
-	int size = sizeof(myTags);
+	int size = sizeof(myTags) / sizeof(myTags[0]);
 
 	// loops through tags for validation
 	for (int i = 0; i < size; i++)
 	{
-		// set flag to valid if it was in the list
-		if(compareTag(tag, myTags[i]))
+		// Cleanup Accepted RFID
+		acceptedRFID = myTags[i];
+		acceptedRFID = acceptedRFID.substring(0, 11);
+
+		// Debug Output
+		if(Debug)
+		{
+			Serial.print(scannedRFID);
+			if(scannedRFID.equals(acceptedRFID))
+			{
+				Serial.print(" == ");
+			}
+			else
+			{
+				Serial.print(" != ");
+			}
+			Serial.print(acceptedRFID);
+			Serial.println();
+		}
+
+		// Check if we have a match
+		if(scannedRFID.equals(acceptedRFID))
 		{
 			// Trigger Good Tag
-			goodTag(tag);
+			goodTag(scannedRFID);
 
 			return;
 		}
 	}
 
 	// Trigger Bad Tag
-	badTag(tag);
+	badTag(scannedRFID);
 }
 
-/* Turn on LED on pin "pin" for 1000ms */
-void lightLED(int pin)
-{
-	digitalWrite(pin, HIGH);
-	delay(1000);
-	digitalWrite(pin, LOW);
-}
-
-/* Reset the RFID reader to read again. */
-void resetReader()
-{
-  digitalWrite(RFIDResetPin, LOW);
-  digitalWrite(RFIDResetPin, HIGH);
-  delay(150);
-}
-
-/* clear the char array by filling with null - ASCII 0 Will think same tag has been read otherwise */
-void clearTag(char one[])
-{
-	for(int i = 0; i < strlen(one); i++)
-	{
-    	one[i] = 0;
-	}
-}
-
-/* compare two value to see if same, strcmp not working 100% so we do this */
-boolean compareTag(char one[], char two[])
-{
-	// empty
-	if(strlen(one) == 0)
-	{
-		return false;
-	}
-
-  	for(int i = 0; i < 12; i++)
-	{
-    	if(one[i] != two[i])
-		{
-			return false;
-		}
-  	}
-
-	// no mismatches
-	return true;
-}
 
 /* This was a Good Tag */
 void goodTag(String tag)
 {
-	Serial.println("GOOD TAG: " + tag);
+	if(Debug)
+	{
+		Serial.println("GOOD TAG: " + tag);
+		Serial.println();
+	}
 
-	lightLED(PinGoodTag);
+	digitalWrite(PinGoodTag, HIGH);
+	delay(1000);
+	digitalWrite(PinGoodTag, LOW);
 }
 
 /* This was a Bad Tag */
 void badTag(String tag)
 {
-	Serial.println("BAD TAG: " + tag);
+	if(Debug)
+	{
+		Serial.println("BAD TAG: " + tag);
+		Serial.println();
+	}
 
-	lightLED(PinBadTag);
+	digitalWrite(PinBadTag, HIGH);
+	delay(1000);
+	digitalWrite(PinBadTag, LOW);
 }
