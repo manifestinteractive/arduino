@@ -24,7 +24,16 @@
 	https://github.com/manifestinteractive/arduino
 
 ======================================================================
+*/
 
+/* Include Required Libraries */
+#include <Wire.h>
+#include <L3G4200D.h> // https://github.com/pololu/L3G4200D
+
+/* Define Gyrsocope */
+L3G4200D gyro;
+	
+/*
 ----------------------------------------------------------------------
 	CONFIGURATION VARIABLES ( CHANGE THESE TO MEET YOUR NEEDS )
 ----------------------------------------------------------------------
@@ -44,13 +53,6 @@ long unsigned int serial_baudrate = 9600;
 	!!! YOU DO NOT NEED TO CHANGE ANYTHING BELOW HERE !!!
 ----------------------------------------------------------------------
 */
-
-/* Include Required Libraries */
-#include <Wire.h>
-#include <L3G4200D.h> // https://github.com/pololu/L3G4200D
-
-/* Define Gyrsocope */
-L3G4200D gyro;
 
 /* Default Arduino Setup Function */
 void setup()

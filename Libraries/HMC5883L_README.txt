@@ -1,0 +1,1 @@
+Library retrieved from http://bildr.org/2012/02/hmc5883l_arduino/
