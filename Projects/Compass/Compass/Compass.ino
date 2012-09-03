@@ -50,7 +50,7 @@ HMC5883L compass;
 bool debug = true;
 
 /* Serial Baudrate */
-long unsigned int serial_baudrate = 9600;
+long unsigned int serialBaudrate = 9600;
 
 /* Declination Angle in Decimal Degrees ( See Setup instruction for how to determine this ) */
 float declinationAngle = -1.01244;
@@ -72,7 +72,7 @@ int error = 0;
 void setup()
 {
 	// Initialize the serial port.
-	Serial.begin(serial_baudrate);
+	Serial.begin(serialBaudrate);
 
 	// Start the I2C interface.
 	if(debug)
